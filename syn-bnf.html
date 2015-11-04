@@ -1,0 +1,339 @@
+<HTML><HEAD>
+<TITLE>Pascal - Syntax in BNF Notation</TITLE>
+</HEAD>
+<BODY>
+<H1>Pascal - Syntax in BNF Notation</H1>
+
+BNF (Backus Naur Form).<P>
+
+<PRE><I>
+pascal-program: 
+   </I>program<I> identifier program-heading</I>opt<I> </I>;<I> block </I>.<I> 
+
+
+program-heading:  
+   </I>(<I> identifier-list </I>)<I> 
+
+
+identifier-list: 
+   identifier  
+   identifier-list </I>,<I> identifier  
+
+
+block:  
+   block1  
+   label-declaration </I>;<I> block1  
+
+
+block1:  
+   block2  
+   constant-declaration </I>;<I> block2  
+
+
+block2:  
+   block3  
+   type-declaration </I>;<I> block3  
+
+
+block3:  
+   block4  
+   variable-declaration </I>;<I> block4  
+
+
+block4:  
+   block5  
+   proc-and-func-declaration </I>;<I> block5  
+
+
+block5:  
+   </I>begin<I> statement-list </I>end<I>  
+
+
+label-declaration:  
+   </I>label<I> unsigned-integer  
+   label-declaration </I>,<I> unsigned-integer  
+
+
+constant-declaration:  
+   </I>const<I>  identifier </I>=<I> constant  
+   constant-declaration </I>;<I>  identifier </I>=<I> constant  
+
+
+type-declaration:  
+   </I>type<I>  identifier </I>=<I> type  
+   type-declaration </I>;<I>  identifier </I>=<I> type  
+
+
+variable-declaration:  
+   </I>var<I> variableid-list </I>:<I> type  
+   variable-declaration </I>;<I> variableid-list </I>:<I> type  
+
+
+variableid-list:  
+   identifier  
+   variableid-list </I>,<I>  identifier  
+
+
+constant:  
+   integer  
+   real 
+   string
+   constid  
+   </I>+<I> constid 
+   TADD</I>-<I> constid 
+
+
+type:  
+   simple-type  
+   structured-type  
+   </I>^<I> typeid  
+
+
+simple-type:  
+   </I>(<I>  identifier-list </I>)<I>  
+   constant </I>...<I> constant  
+   typeid  
+
+
+structured-type:  
+   </I>array<I> </I>[<I> index-list </I>]<I> </I>of<I> type  
+   </I>record<I> field-list </I>end<I>  
+   </I>set<I> </I>of<I> simple-type  
+   </I>file<I> </I>of<I> type  
+   </I>packed<I> structured-type  
+
+
+index-list:  
+   simple-type  
+   index-list </I>,<I> simple-type  
+
+
+field-list:  
+   fixed-part  
+   fixed-part </I>;<I> variant-part 
+   variant-part 
+
+
+fixed-part:  
+   record-field 
+   fixed-part </I>;<I> record-field 
+
+
+record-field: 
+   empty 
+   fieldid-list </I>:<I> type   
+
+
+fieldid-list:  
+   identifier  
+   fieldid-list </I>,<I>  identifier  
+
+
+variant-part: 
+   </I>case<I> tag-field </I>of<I> variant-list 
+
+
+tag-field: 
+   typeid  
+   identifier </I>:<I> typeid  
+
+
+variant-list:  
+   variant 
+   variant-list </I>;<I> variant 
+
+
+variant: 
+   empty 
+   case-label-list </I>:<I> </I>(<I> field-list </I>)<I>  
+
+
+case-label-list:  
+   constant  
+   case-label-list </I>,<I> constant  
+
+
+proc-and-func-declaration:  
+   proc-or-func  
+   proc-and-func-declaration </I>;<I> proc-or-func 
+
+
+proc-or-func:  
+   </I>procedure<I>  identifier parameters</I>opt<I> </I>;<I>  block-or-forward 
+   </I>function<I>  identifier parameters</I>opt<I> </I>:<I> typeid </I>;<I> block-or-forward 
+
+
+block-or-forward:  
+   block  
+   </I>forward<I>  
+
+
+parameters:  
+   </I>(<I> formal-parameter-list </I>)<I>  
+
+
+formal-parameter-list:  
+   formal-parameter-section  
+   formal-parameter-list </I>;<I> formal-parameter-section  
+
+
+formal-parameter-section:  
+   parameterid-list </I>:<I> typeid 
+   </I>var<I> parameterid-list </I>:<I> typeid  
+   </I>procedure<I> identifier parameters</I>opt<I> 
+   </I>function<I> identifier parameters</I>opt<I> </I>:<I> typeid 
+
+
+parameterid-list:  
+   identifier  
+   parameterid-list </I>,<I> identifier  
+
+
+statement-list:  
+   statement  
+   statement-list </I>;<I> statement  
+
+
+statement:  
+   empty  
+   variable </I>:=<I> expression  
+   </I>begin<I> statement-list </I>end<I>  
+   </I>if<I> expression </I>then<I> statement 
+   </I>if<I> expression </I>then<I> statement </I>else<I> statement  
+   </I>case<I> expression </I>of<I> case-list </I>end<I>  
+   </I>while<I> expression </I>do<I> statement  
+   </I>repeat<I> statement-list </I>until<I> expression  
+   </I>for<I> varid </I>:=<I> for-list </I>do<I> statement  
+   procid  
+   procid </I>(<I> expression-list </I>)<I>  
+   </I>goto<I> label 
+   </I>with<I> record-variable-list </I>do<I> statement  
+   label </I>:<I> statement  
+
+
+variable:  
+   identifier  
+   variable </I>[<I> subscript-list </I>]<I>  
+   variable </I>.<I> fieldid  
+   variable </I>^<I>  
+
+
+subscript-list:  
+   expression  
+   subscript-list </I>,<I> expression  
+
+
+case-list:  
+   case-label-list </I>:<I> statement  
+   case-list </I>;<I> case-label-list </I>:<I> statement  
+
+
+for-list:  
+   expression </I>to<I> expression  
+   expression </I>downto<I> expression  
+
+
+expression-list:  
+   expression  
+   expression-list </I>,<I> expression  
+
+
+label:  
+   unsigned-integer 
+
+
+record-variable-list:  
+   variable  
+   record-variable-list </I>,<I> variable  
+
+
+expression: 
+   expression relational-op additive-expression 
+   additive-expression  
+
+
+relational-op: one of 
+   </I>&lt;  &lt;=  =  &lt;&gt;  =&gt;  &gt;<I> 
+
+
+additive-expression: 
+   additive-expression additive-op multiplicative-expression 
+   multiplicative-expression  
+
+
+additive-op: one of 
+   </I>+  -  or<I> 
+
+
+multiplicative-expression: 
+   multiplicative-expression multiplicative-op unary-expression 
+   unary-expression  
+
+
+multiplicative-op: one of 
+   </I>*  /  div  mod  and  in<I> 
+
+
+unary-expression: 
+   unary-op unary-expression  
+   primary-expression  
+
+
+unary-op:  one of 
+   </I>+  -  not<I> 
+
+
+primary-expression:  
+   variable  
+   unsigned-integer  
+   unsigned-real  
+   string  
+   </I>nil<I>  
+   funcid </I>(<I> expression-list </I>)<I>  
+   </I>[<I> element-list </I>]<I>  
+   </I>(<I> expression </I>)<I>  
+
+
+element-list:  
+   empty  
+   element  
+   element-list </I>,<I> element  
+
+
+element:  
+   expression  
+   expression </I>...<I> expression  
+
+
+constid:  
+   identifier  
+
+
+typeid:  
+   identifier  
+
+
+funcid: 
+   identifier  
+
+
+procid:  
+   identifier  
+
+
+fieldid:  
+   identifier   
+
+  
+varid: 
+   identifier  
+
+
+empty: 
+</I></PRE>
+
+<P>
+</i>
+<P>
+<HR>
+</BODY></HTML>

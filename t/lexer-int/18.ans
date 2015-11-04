@@ -1,0 +1,6 @@
+2	11	ident	whitespace
+2	22	ident	test
+3	17	integer	11	11
+4	13	integer	11	11
+4	29	op	-=
+4	31	op	=
