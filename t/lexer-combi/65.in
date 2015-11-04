@@ -1,0 +1,48 @@
+(*****************************************************************************
+ * a SIMPLE BUBBLE SORT PROGRAM.  rEADS INTEGERS, ONE PER LINE, AND PRINTS   *
+ * THEM OUT IN SORTED ORDER.  bLOWS UP IF THERE ARE MORE THAN 49.            *
+ *****************************************************************************)
+program sORT(INPUT, OUTPUT);
+    const
+        (* mAX ARRAY SIZE. *)
+        mAXeLTS = 50;
+    type 
+        (* tYPE OF THE ELEMENT ARRAY. *)
+        iNTaRRtYPE = array [1..mAXeLTS] of iNTEGER;
+
+    var
+        (* iNDEXES, EXCHANGE TEMP, ARRAY SIZE. *)
+        I, J, TMP, SIZE: INTEGER;
+
+        (* aRRAY OF INTS *)
+        ARR: iNTaRRtYPE;
+
+    (* rEAD IN THE INTEGERS. *)
+    procedure rEADaRR(var SIZE: iNTEGER; var A: iNTaRRtYPE);
+        begin
+            SIZE := 1;
+            while not EOF do begin
+                READLN(A[SIZE]);
+                if not EOF then 
+                    SIZE := SIZE + 1
+            end
+        end;
+
+    begin
+        (* rEAD *)
+        rEADaRR(SIZE, ARR);
+
+        (* sORT USING BUBBLE SORT. *)
+        for I := SIZE - 1 downto 1 do
+            for J := 1 to I do 
+                if ARR[J] >= ARR[J + 1] then begin
+                    TMP := ARR[J];
+                    ARR[J] := ARR[J + 1];
+                    ARR[J + 1] := TMP;
+                end;
+
+        (* pRINT. *)
+        for I := 1 to SIZE do
+            WRITELN(ARR[I])
+    end.
+            

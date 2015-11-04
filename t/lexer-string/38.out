@@ -1,0 +1,4 @@
+1	1	string	'comment and tab 	inside str (*comment*) and three quotes '''	comment and tab 	inside str (*comment*) and three quotes '
+1	65	ident	after
+1	71	ident	str
+1	76	BadEOF
