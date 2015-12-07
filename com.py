@@ -8,11 +8,11 @@ with open(argv[1], 'r') as i:
         if len(argv) > 2 and argv[2] == 'l':
             a = l.get_token()
             while not a.ttype is None:
-                print(a.to_cats() + '\n')
+                print(a.to_cats())
                 a = l.get_token()
         else:
             p = Parser(l)
-            p.parse_expr().nprint()
+            p.parse_stmt().nprint()
 
     except LexerException as e:
         print(e.to_cats())
