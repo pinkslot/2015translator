@@ -1,4 +1,4 @@
-from Node import BinOp, UnOp, Const, Var
+from Node import *
 
 class ParserException(Exception):
     def __init__(self, msg, coor):
@@ -14,15 +14,15 @@ class Parser(object):
         self.next()
 
     def next(self):
-        self.cur = self.lexer.get_token()
+        self.cur_token = self.lexer.get_token()
 
     def error(self, msg):
-        raise ParserException(msg, self.cur.get_coor())
+        raise ParserException(msg, self.cur_token.get_coor())
 
     def match(self, *l):
-        ans = self.cur.get_ptype()
-        if ans in l:
-            self.matched = ans
+        ans = self.cur_token
+        if ans.get_ptype() in l:
+            self.matched  = ans
             self.next()
             return True
         else: 
@@ -32,41 +32,74 @@ class Parser(object):
         if not self.match(*l):
             pat = 'Expected %s. But found %s'
             expected = l[0] if len(l) == 1 else 'one of: ' + ', '.join(l)
-            found = self.cur.get_ptype()
+            found = self.cur_token.get_ptype()
             if found is None:
                 found = 'nothing'
             self.error(pat % (expected, found))
 
+    ################### parse expr ###################
     def parse_expr(self):
         ret = self.parse_add()
         while self.match('<', '<=', '=', '<>', '=>', '>'):
-            ret = BinOp(self.matched, ret, self.parse_add())
+            ret = BinOp(self.matched.get_ptype(), ret, self.parse_add())
         return ret
 
     def parse_add(self):
         ret = self.parse_mul()
         while self.match('+', '-', 'or'):
-            ret = BinOp(self.matched, ret, self.parse_mul())
+            ret = BinOp(self.matched.get_ptype(), ret, self.parse_mul())
         return ret
 
     def parse_mul(self):
         ret = self.parse_un()
         while self.match('*', '/', 'div', 'mod', 'and', 'in'):
-            ret = BinOp(self.matched, ret, self.parse_un())
+            ret = BinOp(self.matched.get_ptype(), ret, self.parse_un())
         return ret
 
     def parse_un(self):
         if self.match('-', '+', 'not'):
-            return UnOp(self.matched, self.parse_un())
+            return UnOp(self.matched.get_ptype(), self.parse_un())
         return self.parse_prim()
 
+    def parse_string(self):
+        parts = [ Const(self.matched) ]
+        while self.match('char', 'string'):
+            parts.append(Const(self.matched))
+        return String(parts) if len(parts) > 1 else parts[0]
 
     def parse_prim(self):
-        last = self.cur
         if self.match('('):
             ret = self.parse_expr()
             self.expect(')')
             return ret
-        else: 
-            self.expect('integer', 'real', 'string', 'ident')
-            return Var(last.lexem) if self.matched == 'ident' else Const(last.ttype, last.value)
+        elif self.match('char', 'string'):
+            return self.parse_string()
+        else:
+            self.expect('integer', 'real', 'ident', '(', 'string', 'char')
+            return Var(self.matched) if self.matched.get_ptype() == 'ident' else Const(self.matched)
+
+    ################### parse stmt ###################
+    def parse_stmt(self):
+        if self.match('ident'):
+            var = Var(self.matched)
+            if self.match(':='):
+                return [Assign(var, self.parse_expr())]
+            else:
+                args = [var]
+                if self.match('('):
+                    args.append(self.parse_expr())
+                    while self.match(','):
+                        args.append(self.parse_expr())
+                    self.expect(')')
+                return [CallFunc(args)]
+        else:
+            return self.parse_block()
+    
+    def parse_block(self):
+        stmts = []
+        if self.match('begin'):
+            stmts += self.parse_stmt()
+            while self.match(';'):
+                stmts += self.parse_stmt()
+            self.expect('end')
+        return stmts
