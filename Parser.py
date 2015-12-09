@@ -86,26 +86,79 @@ class Parser(object):
 
     ################### parse stmt ###################
     def parse_stmt(self):
-        if self.match('ident'):
-            var = Var(self.matched)
+        var = self.parse_var()
+        if var:
             if self.match(':='):
-                return [Assign(var, self.parse_expr())]
+                return Assign(var, self.parse_expr())
             else:
-                args = [var]
+                ret = CallFunc(var)
                 if self.match('('):
-                    args.append(self.parse_expr())
+                    ret.append(self.parse_expr())
                     while self.match(','):
-                        args.append(self.parse_expr())
+                        ret.append(self.parse_expr())
                     self.expect(')')
-                return [CallFunc(args)]
+                return ret
+        elif self.match('if'):
+            ret = If(self.parse_expr())
+            self.expect('then')
+            ret.append(self.parse_stmt())
+            if self.match('else'):
+                ret.add_else(self.parse_stmt())
+            return ret
+        elif self.match('case'):
+            ret = Cases(self.parse_expr())
+            self.expect('of')
+            while True:
+                consts = ConstList()
+                while True:
+                    consts.append(self.parse_const() or self.error('Expected const'))
+                    if not self.match(','):
+                        break
+                self.expect(':')
+                ret.append(Case(consts, self.parse_stmt()))
+                if not self.match(';'):
+                    self.expect('end')
+                    return ret
+        elif self.match('while'):
+            e = self.parse_expr()
+            self.expect('do')
+            return While(e, self.parse_stmt())
+        elif self.match('repeat'):
+            stmts = []
+            while True:
+                stmts.append(self.parse_stmt())
+                if not self.match(';'):
+                    break
+            self.expect('until')
+            return Repeat(stmts, self.parse_expr())
+        elif self.match('for'):
+            ret = For(self.parse_var(True))
+            self.expect(':=')
+            ret.append(self.parse_expr())
+            self.expect('to', 'downto')
+            if self.matched.lexem == 'downto':
+                ret.set_down()
+            ret.append(self.parse_expr())
+            self.expect('do')
+            ret.append(self.parse_stmt())
+            return ret
+        elif self.match('with'):
+            ret = With(self.parse_var(True))
+            while self.match(','):
+                ret.append(self.parse_var(True))
+            self.expect('do')
+            ret.append(self.parse_stmt())
+            return ret
         else:
-            return self.parse_block()
+            return self.parse_block() or Empty()
     
     def parse_block(self):
-        stmts = []
         if self.match('begin'):
-            stmts += self.parse_stmt()
+            stmts = [ self.parse_stmt() ]
             while self.match(';'):
-                stmts += self.parse_stmt()
+                stmt = self.parse_stmt()
+                if stmt:
+                    stmts.append(stmt) 
             self.expect('end')
-        return stmts
+            return Block(stmts)
+        return None
