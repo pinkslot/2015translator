@@ -1,10 +1,12 @@
-:=
-	var<a>
-	integer<1>
-()
-	var<f>
-	var<a>
-	integer<1>
-:=
-	var<b>
-	var<f>
+block
+	:=
+		var<a>
+		integer<1>
+	()
+		var<f>
+		var<a>
+		integer<1>
+	:=
+		var<b>
+		var<f>
+	empty

@@ -12,7 +12,7 @@ with open(argv[1], 'r') as i:
                 a = l.get_token()
         else:
             p = Parser(l)
-            print(path[1])
+            path = argv[1].split('\\')
             (p.parse_stmt() if path[1] == 'parser-stmt'\
                 else p.parse_expr() if path[1] == 'parser-expr'\
                 else None).nprint()

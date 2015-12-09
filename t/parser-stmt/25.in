@@ -1,0 +1,1 @@
+repeat begin f(a);g(a); end until 0

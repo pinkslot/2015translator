@@ -1,0 +1,14 @@
+block
+	if
+		var<a>
+		:=
+			var<b>
+			integer<1>
+	if
+		var<a>
+		:=
+			var<b>
+			integer<1>
+		:=
+			var<b>
+			integer<2>

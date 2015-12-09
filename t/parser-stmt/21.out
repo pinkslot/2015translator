@@ -1,0 +1,10 @@
+while
+	var<a>
+	block
+		()
+			var<f>
+			var<a>
+		()
+			var<g>
+			var<a>
+		empty

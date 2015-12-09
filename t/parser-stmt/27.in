@@ -1,0 +1,1 @@
+for a := 1to 2 do f(a);

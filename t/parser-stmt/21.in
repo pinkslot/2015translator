@@ -1,0 +1,1 @@
+while a do begin f(a); g(a); end

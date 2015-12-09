@@ -1,0 +1,6 @@
+block
+	for
+		var<a>
+		integer<1>
+		integer<2>
+		empty

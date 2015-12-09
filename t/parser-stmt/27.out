@@ -1,0 +1,7 @@
+for
+	var<a>
+	integer<1>
+	integer<2>
+	()
+		var<f>
+		var<a>

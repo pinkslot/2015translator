@@ -1,0 +1,11 @@
+repeat
+	block
+		block
+			()
+				var<f>
+				var<a>
+			()
+				var<g>
+				var<a>
+			empty
+	integer<0>
