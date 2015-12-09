@@ -1,0 +1,4 @@
+begin
+with a do b := 1
+with a do begin b := 1; c := 2end
+end

@@ -1,0 +1,7 @@
++
+	integer<11>
+	/
+		*
+			string<foo>
+			integer<2>
+		integer<3>

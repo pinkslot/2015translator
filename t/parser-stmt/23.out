@@ -1,0 +1,9 @@
+repeat
+	block
+		()
+			var<f>
+			var<a>
+		:=
+			var<a>
+			integer<1>
+	integer<1>

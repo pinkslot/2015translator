@@ -1,0 +1,4 @@
+begin
+for a := 1to 2 do did;
+for a := 1downto 2 do done
+end
