@@ -36,6 +36,7 @@ class Parser(object):
             if found is None:
                 found = 'nothing'
             self.error(pat % (expected, found))
+        return True
 
     ################### parse expr ###################
     def parse_expr(self):
@@ -67,16 +68,21 @@ class Parser(object):
             parts.append(Const(self.matched))
         return String(parts) if len(parts) > 1 else parts[0]
 
+    def parse_const(self):
+        return Const(self.matched) if self.match('integer', 'real') else \
+            self.parse_string() if self.match('string', 'char') else None
+
+    def parse_var(self, expect = False):
+        test = self.expect if expect else self.match
+        return Var(self.matched) if test('ident') else None
+
     def parse_prim(self):
         if self.match('('):
             ret = self.parse_expr()
             self.expect(')')
             return ret
-        elif self.match('char', 'string'):
-            return self.parse_string()
         else:
-            self.expect('integer', 'real', 'ident', '(', 'string', 'char')
-            return Var(self.matched) if self.matched.get_ptype() == 'ident' else Const(self.matched)
+            return self.parse_var() or self.parse_const() or self.error('Expected expr')
 
     ################### parse stmt ###################
     def parse_stmt(self):
