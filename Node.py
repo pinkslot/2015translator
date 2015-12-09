@@ -4,6 +4,9 @@ class Node(object):
         self.children = children
         self.print_name = name
 
+    def append(self, x):
+        self.children.append(x)
+
     def nprint(self, indent = 0):
         print('\t' * indent + self.print_name)
         for i in self.children:
@@ -44,6 +47,54 @@ class Assign(Node):
         super().__init__(':=', [var, expr])
 
 class CallFunc(Node):
-    def __init__(self, args):
-        super().__init__('()', args)
+    def __init__(self, func):
+        super().__init__('()', [func])
 
+class Block(Node):
+    def __init__(self, stmts):
+        super().__init__('block', stmts)
+
+class If(Node):
+    def __init__(self, expr):
+        super().__init__('if', [expr])
+        self.have_else = False
+
+    def add_else(self, smtm):
+        self.append(smtm)
+        self.have_else = True
+class Cases(Node):
+    def __init__(self, expr):
+        super().__init__('cases', expr)
+
+class Case(Node):
+    def __init__(self, expr, stmt):
+        super().__init__('case')
+
+class ConstList(Node):
+    def __init__(self):
+        super().__init__('const_list')
+
+class While(Node):
+    def __init__(self, expr, stmt):
+        super().__init__('while', [expr, stmt])
+
+class Repeat(Node):
+    def __init__(self, stmts, expr):
+        super().__init__('repeat', [Block(stmts), expr])
+
+class For(Node):
+    def __init__(self, var):
+        super().__init__('for', [var])
+        self.down = False
+
+    def set_down(self):
+        self.name += '_down'
+        self.down = True
+
+class With(Node):
+    def __init__(self, rec):
+        super().__init__('with', [rec])
+
+class Empty(Node):
+    def __init__(self):
+        super().__init__('empty')
