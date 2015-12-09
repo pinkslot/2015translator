@@ -12,7 +12,10 @@ with open(argv[1], 'r') as i:
                 a = l.get_token()
         else:
             p = Parser(l)
-            p.parse_stmt().nprint()
+            print(path[1])
+            (p.parse_stmt() if path[1] == 'parser-stmt'\
+                else p.parse_expr() if path[1] == 'parser-expr'\
+                else None).nprint()
 
     except LexerException as e:
         print(e.to_cats())
