@@ -1,67 +1,20 @@
 class Token(object):
     operators = {
-        'and',
-        'div',
-        'mod',
-        'not',
-        'or',
-        'xor',
-        '+',
-        '-',
-        '*',
-        '/',
-        '^',
-        '+=',
-        '-=',
-        '*=',
-        '/=',
-        '<',
-        '>',
-        '<=',
-        '>=',
-        '=',
-        '<>',
-        ':=',
-        '@',
-        '.'
+        'and',      'div',      'mod',      'not',       'or',        'xor',      '+',        '-',
+        '*',        '/',        '^',        '+=',        '-=',        '*=',       '/=',       '<',
+        '>',        '<=',       '>=',       '=',        '<>',        ':=',        '@',        '.'
     }
 
     separators = {
-        '(',
-        ')',
-        '[',
-        ']',
-        ';',
-        ',',
-        ':',
-        '..',
+        '(',        ')',        '[',        ']',        ';',        ',',        ':',        '..',
     }
 
     reserved = {
-        'begin',
-        'forward',
-        'do',
-        'else',
-        'end',
-        'for',
-        'function',
-        'if',
-        'array',
-        'of',
-        'procedure',
-        'program',
-        'record',
-        'then',
-        'to',
-        'type',
-        'var',
-        'while',
-        'break', 
-        'continue', 
-        'downto', 
-        'exit', 
-        'repeat', 
-        'until', 
+        'begin',        'forward',  'do',       'else',     'end',          'for',
+        'function',     'if',       'array',    'of',       'procedure',    'program',
+        'record',       'then',     'to',       'type',     'var',          'while',
+        'break',        'continue', 'downto',   'exit',     'repeat',       'until',
+        'case',         'with'
     }
 
     pas2py_value = {
