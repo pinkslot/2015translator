@@ -11,6 +11,7 @@ class ParserException(Exception):
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
+        self.last_csv = None
         self.next()
 
     def next(self):
@@ -69,20 +70,57 @@ class Parser(object):
         return String(parts) if len(parts) > 1 else parts[0]
 
     def parse_const(self):
-        return Const(self.matched) if self.match('integer', 'real') else \
+        a = Const(self.matched) if self.match('integer', 'real') else \
             self.parse_string() if self.match('string', 'char') else None
+        return a
 
     def parse_var(self, expect = False):
         test = self.expect if expect else self.match
         return Var(self.matched) if test('ident') else None
 
+    def parse_csv(self, sbracket, ebracket):
+        if self.match(sbracket):
+            csv = [ self.parse_expr() ]
+            while self.match(','):
+                csv.append(self.parse_expr())
+            self.expect(ebracket)
+            self.last_csv = csv
+            return True
+        else:
+            return None
+
     def parse_prim(self):
-        if self.match('('):
+        var = self.parse_var()
+        if var:
+            if self.parse_csv('(', ')'):
+                return CallFunc(var, self.last_csv)
+            elif self.parse_csv('[', ']'):
+                return Index(var, self.last_csv)
+            elif self.match('.'):
+                return Member(var, self.parse_var(True))
+            elif self.match('^'):
+                return Deref(var)
+            else:
+                return var
+        elif self.match('('):
             ret = self.parse_expr()
             self.expect(')')
             return ret
+        elif self.match('['):
+            ret = Set()
+            if not self.match(']'):
+                while True:
+                    cur = self.parse_expr()
+                    if self.match('..'):
+                        cur = Range(cur, self.parse_expr())
+                    ret.append(cur)
+                    if not self.match(','):
+                        break
+                self.expect(']')
+            return ret
         else:
-            return self.parse_var() or self.parse_const() or self.error('Expected expr')
+            a = self.parse_const()
+            return a or self.error('Expected expr')
 
     ################### parse stmt ###################
     def parse_stmt(self):
@@ -90,14 +128,10 @@ class Parser(object):
         if var:
             if self.match(':='):
                 return Assign(var, self.parse_expr())
+            elif self.parse_csv('(', ')'):
+                return CallFunc(var, self.last_csv)
             else:
-                ret = CallFunc(var)
-                if self.match('('):
-                    ret.append(self.parse_expr())
-                    while self.match(','):
-                        ret.append(self.parse_expr())
-                    self.expect(')')
-                return ret
+                return var
         elif self.match('if'):
             ret = If(self.parse_expr())
             self.expect('then')
