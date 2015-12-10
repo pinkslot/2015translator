@@ -1,7 +1,7 @@
 class Node(object):
-    def __init__(self, name, children = []):
+    def __init__(self, name, children = None):
         self.name = name
-        self.children = children
+        self.children = children or []
         self.print_name = name
 
     def append(self, x):
