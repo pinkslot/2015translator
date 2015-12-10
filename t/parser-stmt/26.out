@@ -3,11 +3,9 @@ block
 		var<a>
 		integer<1>
 		integer<2>
-		()
-			var<did>
+		var<did>
 	for
 		var<a>
 		integer<1>
 		integer<2>
-		()
-			var<done>
+		var<done>

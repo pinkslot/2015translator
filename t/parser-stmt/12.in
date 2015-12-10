@@ -1,1 +1,1 @@
-if a then b+c else c
+if a then a:=b+c else c

@@ -2,7 +2,7 @@ block
 	:=
 		var<a>
 		integer<1>
-	()
+	call
 		var<f>
 		var<a>
 		integer<1>
