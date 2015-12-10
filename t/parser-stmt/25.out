@@ -1,10 +1,10 @@
 repeat
 	block
 		block
-			()
+			call
 				var<f>
 				var<a>
-			()
+			call
 				var<g>
 				var<a>
 			empty

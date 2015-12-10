@@ -1,6 +1,6 @@
 repeat
 	block
-		()
+		call
 			var<f>
 			var<a>
 		:=

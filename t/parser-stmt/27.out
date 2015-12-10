@@ -2,6 +2,6 @@ for
 	var<a>
 	integer<1>
 	integer<2>
-	()
+	call
 		var<f>
 		var<a>
