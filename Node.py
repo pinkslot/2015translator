@@ -41,14 +41,34 @@ class String(Node):
     def __init__(self, parts):
         super().__init__('string', parts)
 
+class Set(Node):
+    def __init__(self):
+        super().__init__('set')
+
+class Range(Node):
+    def __init__(self, left, right):
+        super().__init__('range', [left, right])
+
+class Index(Node):
+    def  __init__(self, array, indices):
+        super().__init__('index', [array] + indices)
+
+class Member(Node):
+    def  __init__(self, record, member):
+        super().__init__('member', [record, member])
+
+class Deref(Node):
+    def  __init__(self, pointer):
+        super().__init__('deref', [pointer])
+
 ################### Stmt ###################
 class Assign(Node):
     def __init__(self, var, expr):
         super().__init__(':=', [var, expr])
 
 class CallFunc(Node):
-    def __init__(self, func):
-        super().__init__('()', [func])
+    def __init__(self, func, args):
+        super().__init__('call', [func] + args)
 
 class Block(Node):
     def __init__(self, stmts):
@@ -72,7 +92,7 @@ class Case(Node):
 
 class ConstList(Node):
     def __init__(self):
-        super().__init__('const_list')
+        super().__init__('c_list')
 
 class While(Node):
     def __init__(self, expr, stmt):

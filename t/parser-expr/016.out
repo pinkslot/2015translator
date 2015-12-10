@@ -1,0 +1,27 @@
+or
+	-
+		+
+			set
+				integer<1>
+				range
+					integer<2>
+					integer<3>
+				integer<4>
+			set
+		*
+			/
+				call
+					var<a>
+					integer<1>
+					integer<2>
+					integer<3>
+				index
+					var<b>
+					integer<4>
+					integer<5>
+					integer<6>
+			member
+				var<c>
+				var<d>
+	deref
+		var<e>

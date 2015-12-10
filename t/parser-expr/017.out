@@ -1,0 +1,7 @@
++
+	index
+		var<a>
+		integer<1>
+	member
+		var<a>
+		var<b>
