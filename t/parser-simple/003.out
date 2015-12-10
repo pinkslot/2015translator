@@ -1,7 +1,0 @@
-1	1	integer	11	11
-1	4	op	+
-1	6	string	'foo'	foo
-1	11	op	*
-1	12	integer	2	2
-1	13	op	/
-1	14	integer	3	3
