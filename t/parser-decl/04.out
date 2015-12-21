@@ -1,0 +1,10 @@
+programm
+VAR---------------
+	a - range_1_2
+	b - enum_mama_papa
+	c - range_1_2
+	member_papa - enum_mama_papa
+	member_mama - enum_mama_papa
+CODE---------------
+	block
+		empty

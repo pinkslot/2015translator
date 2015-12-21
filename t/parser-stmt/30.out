@@ -1,1 +1,1 @@
-SynError: Expected do. But found ident at line 1 col 8
+SynError: Expected do but found ident at line 1 col 8

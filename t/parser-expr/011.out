@@ -1,1 +1,1 @@
-SynError: Expected expr at line 1 col 3
+SynError: Expected expression but found / at line 1 col 3

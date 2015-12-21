@@ -1,21 +1,21 @@
 from Node import *
-
-class ParserException(Exception):
-    def __init__(self, msg, coor):
-        self.msg = msg
-        self.coor = coor
-
-    def eprint(self):
-        print('SynError: %s at line %d col %d' % ((self.msg,) + self.coor))
+from Sym import *
+from Exceptions import ParserException
 
 class Parser(object):
     def __init__(self, lexer):
+        self.buf = []
         self.lexer = lexer
         self.last_csv = None
+        self.cur_func = ProgFunc()
         self.next()
 
     def next(self):
-        self.cur_token = self.lexer.get_token()
+        self.cur_token = self.buf.pop() if len(self.buf) else self.lexer.get_token()
+
+    def prev(self, last):
+        self.buf.append(self.cur_token)
+        self.cur_token = last
 
     def error(self, msg):
         raise ParserException(msg, self.cur_token.get_coor())
@@ -23,21 +23,19 @@ class Parser(object):
     def match(self, *l):
         ans = self.cur_token
         if ans.get_ptype() in l:
-            self.matched  = ans
+            self.matched = ans
             self.next()
-            return True
+            return ans
         else: 
             return False
 
+    def expected_error(self, expected):
+        found = self.cur_token.get_ptype() or 'nothing'
+        self.error('Expected %s but found %s' % (expected, found))
+
     def expect(self, *l):
-        if not self.match(*l):
-            pat = 'Expected %s. But found %s'
-            expected = l[0] if len(l) == 1 else 'one of: ' + ', '.join(l)
-            found = self.cur_token.get_ptype()
-            if found is None:
-                found = 'nothing'
-            self.error(pat % (expected, found))
-        return True
+        return self.match(*l) or \
+            self.expected_error(l[0] if len(l) == 1 else 'one of: ' + ', '.join(l))
 
     ################### parse expr ###################
     def parse_expr(self):
@@ -66,17 +64,19 @@ class Parser(object):
     def parse_string(self):
         parts = [ Const(self.matched) ]
         while self.match('char', 'string'):
-            parts.append(Const(self.matched))
+            parts.append(Const(self.matched), )
         return String(parts) if len(parts) > 1 else parts[0]
 
-    def parse_const(self):
-        a = Const(self.matched) if self.match('integer', 'real') else \
-            self.parse_string() if self.match('string', 'char') else None
-        return a
+    def parse_const(self, expect):
+        return Const(self.matched) if self.match('integer', 'real') else \
+            self.parse_string() if self.match('string', 'char') else \
+            self.expected_error('constant') if expect else None
 
-    def parse_var(self, expect = False):
+    def parse_var(self, expect):
         test = self.expect if expect else self.match
-        return Var(self.matched) if test('ident') else None
+        return Var(self.matched, 1\
+            # self.cur_func.get(self.matched, False)\
+            ) if test('ident') else None
 
     def parse_csv(self, sbracket, ebracket):
         if self.match(sbracket):
@@ -87,21 +87,17 @@ class Parser(object):
             self.last_csv = csv
             return True
         else:
-            return None
+            return False
 
     def parse_prim(self):
-        var = self.parse_var()
+        var = self.parse_right_val()
         if var:
             if self.parse_csv('(', ')'):
                 return CallFunc(var, self.last_csv)
-            elif self.parse_csv('[', ']'):
-                return Index(var, self.last_csv)
-            elif self.match('.'):
-                return Member(var, self.parse_var(True))
-            elif self.match('^'):
-                return Deref(var)
-            else:
-                return var
+                
+            # if type(var.type) == Func:
+            #     return CallFunc(var, [])
+            return var
         elif self.match('('):
             ret = self.parse_expr()
             self.expect(')')
@@ -119,19 +115,29 @@ class Parser(object):
                 self.expect(']')
             return ret
         else:
-            a = self.parse_const()
-            return a or self.error('Expected expr')
+            return self.parse_const(False) or self.expected_error('expression')
+        
+    def parse_right_val(self):
+        var = self.parse_var(False)
+        if not var:
+            return None
+        while True:
+            if self.parse_csv('[', ']'):
+                var = Index(var, self.last_csv)
+            elif self.match('.'):
+                var = Member(var, self.parse_var(True))
+            elif self.match('^'):
+                var = Deref(var)
+            else:
+                return var
 
     ################### parse stmt ###################
     def parse_stmt(self):
-        var = self.parse_var()
+        var = self.parse_right_val()
         if var:
             if self.match(':='):
                 return Assign(var, self.parse_expr())
-            elif self.parse_csv('(', ')'):
-                return CallFunc(var, self.last_csv)
-            else:
-                return var
+            return CallFunc(var, self.last_csv if self.parse_csv('(', ')') else [])
         elif self.match('if'):
             ret = If(self.parse_expr())
             self.expect('then')
@@ -145,7 +151,7 @@ class Parser(object):
             while True:
                 consts = ConstList()
                 while True:
-                    consts.append(self.parse_const() or self.error('Expected const'))
+                    consts.append(self.parse_const(True))
                     if not self.match(','):
                         break
                 self.expect(':')
@@ -186,8 +192,9 @@ class Parser(object):
         else:
             return self.parse_block() or Empty()
     
-    def parse_block(self):
-        if self.match('begin'):
+    def parse_block(self, expect = False):
+        test = self.expect if expect else self.match
+        if test('begin'):
             stmts = [ self.parse_stmt() ]
             while self.match(';'):
                 stmt = self.parse_stmt()
@@ -196,3 +203,115 @@ class Parser(object):
             self.expect('end')
             return Block(stmts)
         return None
+
+    ################### parse declaration ###################
+    def parse_simple_type(self):
+        if self.match('('):
+            t = EnumType()
+            while True:
+                VarEnum(self.expect('ident'), t, self.cur_func)
+                if not self.match(','):
+                    break
+            self.expect(')')
+            return t
+        else:
+            if self.match('ident'):
+                t = self.cur_func.get(self.matched, True, False)
+                if t:
+                    return t
+                self.prev(self.matched)
+            try:
+                fst = self.parse_expr()
+            except ParserException as e:
+                e.msg = e.msg.replace('expression', 'simple type')
+                raise
+            self.expect('..')
+            lst = self.parse_expr()
+            return RangeType(fst, lst)
+
+    def parse_type(self):
+        if self.match('^'):
+            return PointerType(self.cur_func.get(self.expect('ident'), True, True, True))
+        elif self.match('set'):
+            self.expect('of')
+            return SetType(self.parse_simple_type())
+        elif self.match('array'):
+            self.expect('of')
+            return ArrayType(self.parse_type())
+        elif self.match('record'):
+            table = RecordType()
+            while True:
+                self.parse_idents_type(SymVar, False, table)
+                if not self.match(';'):
+                    self.expect('end')
+                    return table
+        else:
+            return self.parse_simple_type()
+
+    def parse_idents_type(self, Type, just_id = False, table = None):
+        table = table or self.cur_func
+        fst = self.expect('ident')
+        arr = [ fst ]
+        while self.match(','):
+            arr.append(self.expect('ident'))
+        self.expect(':')
+        t = self.cur_func.get(self.expect('ident'), True) if just_id else self.parse_type()
+        for i in arr:
+            a = Type(i, t, table)
+
+    def parse_body(self):
+        if self.match('const'):
+            ident = self.expect('ident')
+            while ident:
+                self.expect('=')                #use parse_expr
+                SymConst(ident, self.parse_expr(), self.cur_func)
+                self.expect(';')
+                ident = self.match('ident')
+
+        if self.match('type'):
+            ident = self.expect('ident')
+            while ident:
+                self.expect('=')
+                self.cur_func.add_type_alias(ident, self.parse_type())
+                self.expect(';')
+                ident = self.match('ident')
+
+        if self.match('var'):
+            while True:
+                self.parse_idents_type(SymVar)
+                self.expect(';')
+                if self.cur_token.get_ptype() != 'ident':
+                    break
+
+        while self.parse_head():
+            self.parse_body()           # TODO forward
+            self.expect(';')
+            self.cur_func = self.cur_func.par
+
+        self.cur_func.define(self.parse_block(True))
+
+    def parse_head(self):
+        if not self.match('function'):
+            return False
+        self.cur_func = SymFunc(self.expect('ident'), self.cur_func)
+        if self.match('('):
+            while True:
+                if self.match('var'):
+                    self.parse_idents_type(RefParam, True)
+                # elif self.parse_head():            # TODO arg - func
+                #     pass
+                else:
+                    self.parse_idents_type(VarParam, True)
+                if not self.match(';'):
+                    break
+            self.expect(')')
+        if self.match(':'):
+            self.cur_func.set_ret_type(self.expect('ident'))
+        self.expect(';')
+        return True
+
+    def parse_program(self):
+        self.match('program')
+        self.parse_body()
+        self.expect('.')
+        return self.cur_func

@@ -6,7 +6,7 @@
 5	21	ident	OUTPUT
 5	27	sep	)
 5	28	sep	;
-6	5	ident	const
+6	5	keyword	const
 8	9	ident	mAXeLTS
 8	17	op	=
 8	19	integer	50	50
@@ -38,7 +38,7 @@
 18	12	sep	:
 18	14	ident	iNTaRRtYPE
 18	24	sep	;
-21	5	keyword	procedure
+21	5	ident	procedure
 21	15	ident	rEADaRR
 21	22	sep	(
 21	23	keyword	var

@@ -1,0 +1,4 @@
+var
+a: record a,b:real; c:integer end;
+
+begin end.

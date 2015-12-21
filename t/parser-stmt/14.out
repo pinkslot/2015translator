@@ -1,1 +1,13 @@
 cases
+	integer<1>
+	case
+		c_list
+			integer<1>
+		empty
+	case
+		c_list
+			integer<2>
+			integer<3>
+		call
+			var<writeln>
+			integer<1>

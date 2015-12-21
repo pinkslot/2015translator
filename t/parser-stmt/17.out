@@ -1,1 +1,1 @@
-SynError: Expected const at line 2 col 1
+SynError: Expected constant but found ident at line 2 col 1

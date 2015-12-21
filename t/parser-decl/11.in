@@ -1,0 +1,3 @@
+var
+a:set of ^integer;
+begin end.

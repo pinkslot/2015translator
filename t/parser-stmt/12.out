@@ -1,3 +1,9 @@
 if
 	var<a>
-	var<b>
+	:=
+		var<a>
+		+
+			var<b>
+			var<c>
+	call
+		var<c>
