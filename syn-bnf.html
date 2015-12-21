@@ -8,24 +8,10 @@ BNF (Backus Naur Form).<P>
 
 <PRE><I>
 pascal-program: 
-   </I>program<I> identifier program-heading</I>opt<I> </I>;<I> block </I>.<I> 
-
-
-program-heading:  
-   </I>(<I> identifier-list </I>)<I> 
-
-
-identifier-list: 
-   identifier  
-   identifier-list </I>,<I> identifier  
+   </I>program<I> </I>opt<I> block </I>.<I> 
 
 
 block:  
-   block1  
-   label-declaration </I>;<I> block1  
-
-
-block1:  
    block2  
    constant-declaration </I>;<I> block2  
 
@@ -49,14 +35,9 @@ block5:
    </I>begin<I> statement-list </I>end<I>  
 
 
-label-declaration:  
-   </I>label<I> unsigned-integer  
-   label-declaration </I>,<I> unsigned-integer  
-
-
 constant-declaration:  
-   </I>const<I>  identifier </I>=<I> constant  
-   constant-declaration </I>;<I>  identifier </I>=<I> constant  
+   </I>const<I>  identifier </I>=<I> expression  
+   constant-declaration </I>;<I>  identifier </I>=<I> expression  
 
 
 type-declaration:  
@@ -74,15 +55,6 @@ variableid-list:
    variableid-list </I>,<I>  identifier  
 
 
-constant:  
-   integer  
-   real 
-   string
-   constid  
-   </I>+<I> constid 
-   TADD</I>-<I> constid 
-
-
 type:  
    simple-type  
    structured-type  
@@ -91,81 +63,38 @@ type:
 
 simple-type:  
    </I>(<I>  identifier-list </I>)<I>  
-   constant </I>...<I> constant  
+   expression </I>...<I> expression  
    typeid  
 
 
 structured-type:  
-   </I>array<I> </I>[<I> index-list </I>]<I> </I>of<I> type  
+   </I>array<I> </I>of<I> type  
    </I>record<I> field-list </I>end<I>  
    </I>set<I> </I>of<I> simple-type  
-   </I>file<I> </I>of<I> type  
-   </I>packed<I> structured-type  
-
-
-index-list:  
-   simple-type  
-   index-list </I>,<I> simple-type  
 
 
 field-list:  
-   fixed-part  
-   fixed-part </I>;<I> variant-part 
-   variant-part 
-
-
-fixed-part:  
    record-field 
-   fixed-part </I>;<I> record-field 
+   field-list </I>;<I> record-field 
 
 
 record-field: 
-   empty 
-   fieldid-list </I>:<I> type   
+   identifier-list </I>:<I> type   
 
 
-fieldid-list:  
+identifier-list: 
    identifier  
-   fieldid-list </I>,<I>  identifier  
+   identifier-list </I>,<I> identifier  
 
 
-variant-part: 
-   </I>case<I> tag-field </I>of<I> variant-list 
+func-declaration:  
+   func  
+   func-declaration </I>;<I> func 
 
 
-tag-field: 
-   typeid  
-   identifier </I>:<I> typeid  
-
-
-variant-list:  
-   variant 
-   variant-list </I>;<I> variant 
-
-
-variant: 
-   empty 
-   case-label-list </I>:<I> </I>(<I> field-list </I>)<I>  
-
-
-case-label-list:  
-   constant  
-   case-label-list </I>,<I> constant  
-
-
-proc-and-func-declaration:  
-   proc-or-func  
-   proc-and-func-declaration </I>;<I> proc-or-func 
-
-
-proc-or-func:  
-   </I>procedure<I>  identifier parameters</I>opt<I> </I>;<I>  block-or-forward 
-   </I>function<I>  identifier parameters</I>opt<I> </I>:<I> typeid </I>;<I> block-or-forward 
-
-
-block-or-forward:  
-   block  
-   </I>forward<I>  
+func:  
+   </I>function<I>  identifier parameters</I>opt<I> </I>:<I> typeid </I>;<I> block 
+   </I>function<I>  identifier parameters</I>opt<I> </I>;<I> block
 
 
 parameters:  
@@ -178,15 +107,8 @@ formal-parameter-list:
 
 
 formal-parameter-section:  
-   parameterid-list </I>:<I> typeid 
-   </I>var<I> parameterid-list </I>:<I> typeid  
-   </I>procedure<I> identifier parameters</I>opt<I> 
-   </I>function<I> identifier parameters</I>opt<I> </I>:<I> typeid 
-
-
-parameterid-list:  
-   identifier  
-   parameterid-list </I>,<I> identifier  
+   identifier-list </I>:<I> typeid 
+   </I>var<I> identifier-list </I>:<I> typeid  
 
 
 statement-list:  
@@ -204,28 +126,21 @@ statement:
    </I>while<I> expression </I>do<I> statement  
    </I>repeat<I> statement-list </I>until<I> expression  
    </I>for<I> varid </I>:=<I> for-list </I>do<I> statement  
-   procid  
-   procid </I>(<I> expression-list </I>)<I>  
-   </I>goto<I> label 
+   funcid  
+   funcid </I>(<I> expression-list </I>)<I>  
    </I>with<I> record-variable-list </I>do<I> statement  
-   label </I>:<I> statement  
-
 
 variable:  
    identifier  
-   variable </I>[<I> subscript-list </I>]<I>  
+   variable </I>[<I> expression </I>]<I>  
    variable </I>.<I> fieldid  
    variable </I>^<I>  
 
 
-subscript-list:  
-   expression  
-   subscript-list </I>,<I> expression  
-
-
 case-list:  
-   case-label-list </I>:<I> statement  
-   case-list </I>;<I> case-label-list </I>:<I> statement  
+   expression-list </I>:<I> statement  
+   case-list </I>;<I> expression-list </I>:<I> statement  
+
 
 
 for-list:  
@@ -236,10 +151,6 @@ for-list:
 expression-list:  
    expression  
    expression-list </I>,<I> expression  
-
-
-label:  
-   unsigned-integer 
 
 
 record-variable-list:  
@@ -288,14 +199,15 @@ primary-expression:
    unsigned-integer  
    unsigned-real  
    string  
-   </I>nil<I>  
    funcid </I>(<I> expression-list </I>)<I>  
    </I>[<I> element-list </I>]<I>  
    </I>(<I> expression </I>)<I>  
 
+string:
+   string primary-string
+   string char
 
 element-list:  
-   empty  
    element  
    element-list </I>,<I> element  
 
@@ -315,14 +227,6 @@ typeid:
 
 funcid: 
    identifier  
-
-
-procid:  
-   identifier  
-
-
-fieldid:  
-   identifier   
 
   
 varid: 
