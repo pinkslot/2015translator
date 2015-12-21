@@ -1,0 +1,12 @@
+var a:real;
+function f(a:real): integer;
+    function g(b:real; c:real);		{ don't use procedure token }
+        begin
+            a := b+c;
+        end;
+    begin
+        g(1,2)
+    end;
+begin 
+    f(1.1)
+end.

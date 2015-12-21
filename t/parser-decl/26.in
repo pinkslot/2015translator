@@ -1,0 +1,5 @@
+type
+color = (blue, green, pink);
+var
+a: ^color;
+begin end.

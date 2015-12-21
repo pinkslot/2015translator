@@ -1,0 +1,11 @@
+:=
+	deref
+		var<a>
+	member
+		index
+			deref
+				var<c>
+			member
+				var<b>
+				var<b>
+		var<a>

@@ -1,0 +1,31 @@
+programm
+VAR---------------
+	f - integer_func_real
+	VAR---------------
+		g - func_real_real
+		VAR---------------
+			b_param - real
+			c_param - real
+		CODE---------------
+			block
+				:=
+					var<a>
+					+
+						var<b>
+						var<c>
+				empty
+
+		a_param - real
+	CODE---------------
+		block
+			call
+				var<g>
+				integer<1>
+				integer<2>
+
+	a - real
+CODE---------------
+	block
+		call
+			var<f>
+			real<1.1>

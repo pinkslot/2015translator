@@ -1,0 +1,10 @@
+programm
+VAR---------------
+	a - pointer_string
+TYPE---------------
+	a - pointer_string
+CODE---------------
+	block
+		call
+			var<f>
+			real<1.1>

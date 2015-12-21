@@ -1,0 +1,7 @@
+type
+ar = array of real;
+sar = set of ar;
+var
+b: ^sar;
+
+begin end.

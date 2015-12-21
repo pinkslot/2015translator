@@ -1,0 +1,12 @@
+programm
+VAR---------------
+	member_b - enum_b_c_d
+	member_c - enum_b_c_d
+	q - record
+	VAR---------------
+		a - enum_b_c_d
+
+	member_d - enum_b_c_d
+CODE---------------
+	block
+		empty

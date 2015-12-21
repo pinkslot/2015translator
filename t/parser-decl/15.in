@@ -1,0 +1,3 @@
+var
+q: record a: (b, c, d)end; { enum member stored in fucn, not in struct }
+begin end.

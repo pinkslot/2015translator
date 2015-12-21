@@ -1,0 +1,11 @@
+programm
+VAR---------------
+	a - pointer_enum_blue_green_pink
+	member_blue - enum_blue_green_pink
+	member_green - enum_blue_green_pink
+	member_pink - enum_blue_green_pink
+TYPE---------------
+	color - enum_blue_green_pink
+CODE---------------
+	block
+		empty

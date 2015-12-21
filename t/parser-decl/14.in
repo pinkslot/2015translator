@@ -1,0 +1,3 @@
+var
+a: record a:real; end;
+begin end.

@@ -1,0 +1,9 @@
+programm
+VAR---------------
+	b - pointer_set_array_real
+TYPE---------------
+	sar - set_array_real
+	ar - array_real
+CODE---------------
+	block
+		empty

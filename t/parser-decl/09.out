@@ -1,0 +1,10 @@
+programm
+VAR---------------
+	a - array_integer
+	member_raz - enum_raz_dva_tri
+	member_tri - enum_raz_dva_tri
+	b - set_enum_raz_dva_tri
+	member_dva - enum_raz_dva_tri
+CODE---------------
+	block
+		empty

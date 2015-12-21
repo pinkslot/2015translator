@@ -1,0 +1,4 @@
+var
+a: b .. c 	{make range when expr.const_val() will be ready}
+
+begin end.
