@@ -74,9 +74,7 @@ class Parser(object):
 
     def parse_var(self, expect):
         test = self.expect if expect else self.match
-        return Var(self.matched, 1\
-            # self.cur_func.get(self.matched, False)\
-            ) if test('ident') else None
+        return Var(self.matched, self.cur_func.get(self.matched, False)) if test('ident') else None
 
     def parse_csv(self, sbracket, ebracket):
         if self.match(sbracket):
@@ -263,8 +261,8 @@ class Parser(object):
         if self.match('const'):
             ident = self.expect('ident')
             while ident:
-                self.expect('=')                #use parse_expr
-                SymConst(ident, self.parse_expr(), self.cur_func)
+                self.expect('=')
+                VarConst(ident, self.parse_expr(), self.cur_func)
                 self.expect(';')
                 ident = self.match('ident')
 
