@@ -18,7 +18,7 @@ class EnumType(SymType):
 
 class RangeType(SymType):
     def __init__(self, fst_node, lst_node):
-        super().__init__('range_%d_%d' % (fst_node.val, lst_node.val))
+        super().__init__('range_%d_%d' % (fst_node.get_const_value(), lst_node.get_const_value()))
         self.fst = fst_node         # TODO get value
         self.lst = fst_node
 
