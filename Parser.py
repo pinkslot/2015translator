@@ -207,7 +207,7 @@ class Parser(object):
         if self.match('('):
             t = EnumType()
             while True:
-                VarEnum(self.expect('ident'), t, self.cur_func)
+                EnumVar(self.expect('ident'), t, self.cur_func)
                 if not self.match(','):
                     break
             self.expect(')')
@@ -262,7 +262,7 @@ class Parser(object):
             ident = self.expect('ident')
             while ident:
                 self.expect('=')
-                VarConst(ident, self.parse_expr(), self.cur_func)
+                ConstVar(ident, self.parse_expr(), self.cur_func)
                 self.expect(';')
                 ident = self.match('ident')
 
@@ -299,7 +299,7 @@ class Parser(object):
                 # elif self.parse_head():            # TODO arg - func
                 #     pass
                 else:
-                    self.parse_idents_type(VarParam, True)
+                    self.parse_idents_type(ParamVar, True)
                 if not self.match(';'):
                     break
             self.expect(')')
