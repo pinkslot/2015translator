@@ -24,16 +24,34 @@ class Expr(Node):
         self.children = children or []
         super().__init__(name, children)
 
-    def get_sym_type(self):
-        assert False, 'undef get_type for some Expr'
+    def get_sym_type(self):                 # TODO inherit definition
+        return self.children[0].get_sym_type()
+
+    def get_const_value(self):
+        assert False, 'get_value for some Expr'
 
 class BinOp(Expr):
     def __init__(self, op, arg1, arg2):
         super().__init__(op, [arg1, arg2])
 
+    pas2py_op = {
+        'div': '//',
+        'mod': '%',
+        '<>': '!='
+    }
+
+    def py_op(self):
+        return self.pas2py_op[self.name] if self.name in self.pas2py_op else self.name
+
+    def get_const_value(self):
+        return eval(self.py_op().join((str(self.children[i].get_const_value()) for i in (0,1))))
+
 class UnOp(Expr):
     def __init__(self, op, arg):
         super().__init__(op, [arg])
+
+    def get_const_value(self):
+        return eval(self.name + self.children[0].get_const_value())
 
 class Var(Expr):
     def __init__(self, token, sym_var):
@@ -45,22 +63,35 @@ class Var(Expr):
         return 'var<%s>' % self.ident
 
     def get_sym_type(self):
+        print(self.sym_var, self.ident)
         return self.sym_var.sym_type
+
+    def get_const_value(self):
+        return self.sym_var.get_const_value()
 
 class Const(Expr):
     def __init__(self, token):
         super().__init__(token.get_ptype())
-        self.val = token.value
+        self.value = token.value
 
     def get_print_name(self):
-        return self.name + '<%s>' % str(self.val)
+        return self.name + '<%s>' % str(self.value)
 
     def get_sym_type(self):
         return BASE_TYPES[self.name]
 
+    def get_const_value(self):
+        print 
+        if self.get_sym_type() == BASE_TYPES['string']:
+            return "'''%s'''" % self.value
+        return self.value
+
 class String(Expr):
     def __init__(self, parts):
         super().__init__('string', parts)
+
+    def get_const_value(self):
+        return ''.join((x.get_const_value() for x in self.children))
 
 class Set(Expr):
     def __init__(self):
