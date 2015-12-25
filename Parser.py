@@ -7,7 +7,7 @@ class Parser(object):
         self.buf = []
         self.lexer = lexer
         self.last_csv = None
-        self.cur_func = ProgFunc()
+        self.cur_func = ProgFuncType()
         self.next()
 
     def next(self):
@@ -207,7 +207,7 @@ class Parser(object):
         if self.match('('):
             t = EnumType()
             while True:
-                VarEnum(self.expect('ident'), t, self.cur_func)
+                EnumVar(self.expect('ident'), t, self.cur_func)
                 if not self.match(','):
                     break
             self.expect(')')
@@ -262,7 +262,7 @@ class Parser(object):
             ident = self.expect('ident')
             while ident:
                 self.expect('=')
-                VarConst(ident, self.parse_expr(), self.cur_func)
+                ConstVar(ident, self.parse_expr(), self.cur_func)
                 self.expect(';')
                 ident = self.match('ident')
 
@@ -291,15 +291,15 @@ class Parser(object):
     def parse_head(self):
         if not self.match('function'):
             return False
-        self.cur_func = SymFunc(self.expect('ident'), self.cur_func)
+        self.cur_func = FuncType(self.expect('ident'), self.cur_func)
         if self.match('('):
             while True:
                 if self.match('var'):
-                    self.parse_idents_type(RefParam, True)
+                    self.parse_idents_type(RefParamVar, True)
                 # elif self.parse_head():            # TODO arg - func
                 #     pass
                 else:
-                    self.parse_idents_type(VarParam, True)
+                    self.parse_idents_type(ParamVar, True)
                 if not self.match(';'):
                     break
             self.expect(')')
