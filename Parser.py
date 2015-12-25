@@ -58,7 +58,7 @@ class Parser(object):
         return ret
 
     def parse_un(self):
-        if self.match('-', '+', 'not'):
+        if self.match('-', '+', 'not', '@'):
             return UnOp(self.matched.get_ptype(), self.parse_un())
         return self.parse_prim()
 
