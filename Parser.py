@@ -42,19 +42,19 @@ class Parser(object):
     def parse_expr(self):
         ret = self.parse_add()
         while self.match('<', '<=', '=', '<>', '=>', '>'):
-            ret = BinOp(self.matched.get_ptype(), ret, self.parse_add())
+            ret = LogicOp(self.matched.get_ptype(), ret, self.parse_add())
         return ret
 
     def parse_add(self):
         ret = self.parse_mul()
         while self.match('+', '-', 'or'):
-            ret = BinOp(self.matched.get_ptype(), ret, self.parse_mul())
+            ret = AddOp(self.matched.get_ptype(), ret, self.parse_mul())
         return ret
 
     def parse_mul(self):
         ret = self.parse_un()
         while self.match('*', '/', 'div', 'mod', 'and', 'in'):
-            ret = BinOp(self.matched.get_ptype(), ret, self.parse_un())
+            ret = MulOp(self.matched.get_ptype(), ret, self.parse_un())
         return ret
 
     def parse_un(self):
@@ -73,7 +73,8 @@ class Parser(object):
             self.parse_string() if self.match('string', 'char') else \
             self.expected_error('constant') if expect else None
 
-    def parse_var(self, expect):
+    def parse_var(self, expect, table = False):
+        table = table or self.cur_func
         test = self.expect if expect else self.match
         return Var(self.matched, self.cur_func.get(self.matched, False)) if test('ident') else None
 
@@ -124,7 +125,9 @@ class Parser(object):
                 var = Index(var, self.parse_expr())         # multi index unsupported!
                 self.expect(']')
             elif self.match('.'):
-                var = Member(var, self.parse_var(True))
+                table = var
+                var = Member(var)
+                var.set_member(self.parse_var(True, table))
             elif self.match('^'):
                 var = Deref(var)
             else:
