@@ -30,6 +30,10 @@ class BaseType(SymType):
         return self == yous
 
 BASE_TYPES = dict((x, BaseType(x)) for x in ('integer', 'real', 'string'))
+ITYPE = BASE_TYPES['integer']
+RTYPE = BASE_TYPES['real']
+STYPE = BASE_TYPES['string']
+
 class DerType(SymType):
     def __init__(self, name, base):
         super().__init__(name)
