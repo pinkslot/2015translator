@@ -1,5 +1,5 @@
 from Exceptions import ParserException, indent_str
-from Sym import BASE_TYPES
+from Sym import *
 
 class Node(object):
     def __init__(self, name, children = None):
