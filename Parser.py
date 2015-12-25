@@ -120,8 +120,9 @@ class Parser(object):
         if not var:
             return None
         while True:
-            if self.parse_csv('[', ']'):
-                var = Index(var, self.last_csv)
+            if self.match('['):
+                var = Index(var, self.parse_expr())         # multi index unsupported!
+                self.expect(']')
             elif self.match('.'):
                 var = Member(var, self.parse_var(True))
             elif self.match('^'):
