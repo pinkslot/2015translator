@@ -1,7 +1,8 @@
 class ParserException(Exception):
-    def __init__(self, msg, coor):
+    parser = None
+    def __init__(self, msg, coor = None):
         self.msg = msg
-        self.coor = coor
+        self.coor = coor or ParserException.parser.cur_token.get_coor()
 
     def eprint(self):
         print('SynError: %s at line %d col %d' % ((self.msg,) + self.coor))

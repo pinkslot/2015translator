@@ -9,6 +9,7 @@ class Parser(object):
         self.last_csv = None
         self.cur_func = ProgFuncType()
         self.next()
+        ParserException.parser = self
 
     def next(self):
         self.cur_token = self.buf.pop() if len(self.buf) else self.lexer.get_token()

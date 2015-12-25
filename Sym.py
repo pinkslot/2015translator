@@ -1,4 +1,4 @@
-from Exceptions import ParserException, indent_str
+from Exceptions import *
 
 class Sym(object):
     def __init__(self, name):
