@@ -89,11 +89,10 @@ class Parser(object):
             return False
 
     def parse_prim(self):
-        var = self.parse_right_val()
+        var = self.parse_left_val()
         if var:
             if self.parse_csv('(', ')'):
                 return CallFunc(var, self.last_csv)
-                
             # if type(var.type) == Func:
             #     return CallFunc(var, [])
             return var
@@ -116,7 +115,7 @@ class Parser(object):
         else:
             return self.parse_const(False) or self.expected_error('expression')
         
-    def parse_right_val(self):
+    def parse_left_val(self):
         var = self.parse_var(False)
         if not var:
             return None
@@ -132,7 +131,7 @@ class Parser(object):
 
     ################### parse stmt ###################
     def parse_stmt(self):
-        var = self.parse_right_val()
+        var = self.parse_left_val()
         if var:
             if self.match(':='):
                 return Assign(var, self.parse_expr())
