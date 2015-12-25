@@ -159,10 +159,10 @@ class ProgFuncType(FuncType):
         self.code = None
         self.var_table = {}
         self.type_table = {}
-        self.par = DummyFunc()
+        self.par = DummyFuncType()
 
 
-class DummyFunc(FuncType):
+class DummyFuncType(FuncType):
     def __init__(self):
         self.type_table = BASE_TYPES
 
