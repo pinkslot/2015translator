@@ -1,0 +1,5 @@
+var a:real;
+function f:real;
+	const b=@a;
+	begin end;
+begin end.

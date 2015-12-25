@@ -1,0 +1,5 @@
+var a: real;
+function f(par:real):real;
+	const b = a;
+	begin end;
+begin end.

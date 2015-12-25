@@ -1,0 +1,4 @@
+const a = 3 <> 4;
+	b = 3 div 4;
+	c = not 3;
+begin end.

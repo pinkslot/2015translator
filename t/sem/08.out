@@ -1,0 +1,6 @@
+programm
+VAR---------------
+	a - integer const<3>
+CODE---------------
+	block
+		empty

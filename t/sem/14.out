@@ -1,0 +1,11 @@
+programm
+VAR---------------
+	a - real
+	b - pointer_real
+CODE---------------
+	block
+		:=
+			var<b>
+			@
+				var<a>
+		empty
