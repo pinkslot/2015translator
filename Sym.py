@@ -61,7 +61,7 @@ class SymVar(Sym):
     def get_const_value(self):
         raise ParserException('Expected const but found var', id_token.get_coor())
 
-class VarEnum(SymVar):
+class EnumVar(SymVar):
     def __init__(self, id_token, stype, func):
         super().__init__(id_token, stype, func)
         stype.name += '_' + self.name
@@ -72,19 +72,19 @@ class VarEnum(SymVar):
     # def sprint(self, indent):
     #     pass
 
-class VarParam(SymVar):
+class ParamVar(SymVar):
     def __init__(self, id_token, stype, func):
         super().__init__(id_token, stype, func)
         func.name += '_' + stype.name
         self.name += '_param'
         func.param.append(self)
 
-class RefParam(VarParam):
+class RefParamVar(ParamVar):
     def __init__(self, id_token, stype, func):
         super().__init__(id_token, stype, func)
         self.name += '_ref'
 
-class VarConst(SymVar):
+class ConstVar(SymVar):
     def __init__(self, id_token, node_val, func):
         super().__init__(id_token, node_val.get_sym_type(), func)             # TODO node_val.get_type()
         self.value = node_val.get_const_value()
@@ -119,7 +119,7 @@ class Table(SymType):
                 ret += v.print_str(indent + 1) + '\n'
         return ret
 
-class SymFunc(Table):
+class FuncType(Table):
     def __init__(self, id_token, func):
         super().__init__('func')
         SymVar(id_token, self, func)
@@ -153,7 +153,7 @@ class SymFunc(Table):
         ret += self.code.print_str(indent + 1)
         return ret
 
-class ProgFunc(SymFunc):
+class ProgFuncType(FuncType):
     def __init__(self):
         self.name = 'programm'
         self.code = None
@@ -162,7 +162,7 @@ class ProgFunc(SymFunc):
         self.par = DummyFunc()
 
 
-class DummyFunc(SymFunc):
+class DummyFunc(FuncType):
     def __init__(self):
         self.type_table = BASE_TYPES
 
