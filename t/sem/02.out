@@ -1,0 +1,6 @@
+programm
+VAR---------------
+	a - integer const<6>
+CODE---------------
+	block
+		empty

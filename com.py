@@ -15,7 +15,7 @@ with open(argv[1], 'r') as i:
             path = argv[1].split('\\')
             print(p.parse_stmt().print_str(), end='') if path[1] == 'parser-stmt'\
                 else print(p.parse_expr().print_str(), end='') if path[1] == 'parser-expr'\
-                else print(p.parse_program().print_str(), end='') if path[1] == 'parser-decl'\
+                else print(p.parse_program().print_str(), end='') if path[1] in ('parser-decl', 'sem')\
                 else None
 
     except LexerException as e:

@@ -1,0 +1,5 @@
+var a:real;
+b:^real;
+begin
+	b:=@a;
+end.

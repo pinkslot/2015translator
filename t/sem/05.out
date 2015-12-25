@@ -1,0 +1,6 @@
+programm
+VAR---------------
+	a - string const<123123qwe>
+CODE---------------
+	block
+		empty
