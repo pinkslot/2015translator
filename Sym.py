@@ -18,7 +18,7 @@ class EnumType(SymType):
 
 class RangeType(SymType):
     def __init__(self, fst_node, lst_node):
-        super().__init__('range_%d_%d' % (fst_node.get_const_value(), lst_node.get_const_value()))
+        super().__init__('range_%d_%d' % (fst_node.eval(True), lst_node.eval(True)))
         self.fst = fst_node         # TODO get value
         self.lst = fst_node
 
@@ -62,8 +62,10 @@ class SymVar(Sym):
     def print_str(self, indent):
         return indent_str(indent, self.name + ' - ' + self.sym_type.print_str(indent))
 
-    def get_const_value(self):
-        raise ParserException('Expected const but found var', id_token.get_coor())
+    def eval(self, is_const = False):
+        if is_const:
+            raise ParserException('Expected const but found var')
+        return 0 # TODO return value
 
 class EnumVar(SymVar):
     def __init__(self, id_token, stype, func):
@@ -91,9 +93,9 @@ class RefParamVar(ParamVar):
 class ConstVar(SymVar):
     def __init__(self, id_token, node_val, func):
         super().__init__(id_token, node_val.get_sym_type(), func)             # TODO node_val.get_type()
-        self.value = node_val.get_const_value()
+        self.value = node_val.eval(True)
 
-    def get_const_value(self):
+    def eval(self, is_const = False):
         return self.value
 
     def print_str(self, indent):

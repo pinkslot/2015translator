@@ -27,8 +27,10 @@ class Expr(Node):
     def get_sym_type(self):                 # TODO inherit definition
         return self.children[0].get_sym_type()
 
-    def get_const_value(self):
-        assert False, 'get_value for some Expr'
+        return self.ch[0].get_sym_type()
+
+    def eval(self):
+        assert False, 'eval for some Expr'
 
 class BinOp(Expr):
     def __init__(self, op, arg1, arg2):
@@ -43,15 +45,20 @@ class BinOp(Expr):
     def py_op(self):
         return self.pas2py_op[self.name] if self.name in self.pas2py_op else self.name
 
-    def get_const_value(self):
-        return eval(self.py_op().join((str(self.children[i].get_const_value()) for i in (0,1))))
+    def eval(self, is_const = False):
+        return non_bool_eval((' ' + self.py_op() + ' ').join((str(self.ch[i].eval(is_const)) for i in (0,1))))
+
 
 class UnOp(Expr):
     def __init__(self, op, arg):
         super().__init__(op, [arg])
 
-    def get_const_value(self):
-        return eval(self.name + self.children[0].get_const_value())
+    def eval(self, is_const = False):
+        if self.name == '@':
+            if is_const:           # TODO eval addr
+                raise ParserException('Expected const but found addr')
+        else:
+            return non_bool_eval(self.name + ' ' + str(self.ch[0].eval(is_const)))
 
 class Var(Expr):
     def __init__(self, token, sym_var):
@@ -65,9 +72,8 @@ class Var(Expr):
     def get_sym_type(self):
         print(self.sym_var, self.ident)
         return self.sym_var.sym_type
-
-    def get_const_value(self):
-        return self.sym_var.get_const_value()
+        ch_type = self.ch[0].get_sym_type()
+        return PointerType(ch_type) if self.name == '@' else ch_type
 
 class Const(Expr):
     def __init__(self, token):
@@ -80,18 +86,15 @@ class Const(Expr):
     def get_sym_type(self):
         return BASE_TYPES[self.name]
 
-    def get_const_value(self):
-        print 
-        if self.get_sym_type() == BASE_TYPES['string']:
-            return "'''%s'''" % self.value
+    def eval(self, is_const = False):
         return self.value
 
 class String(Expr):
     def __init__(self, parts):
         super().__init__('string', parts)
 
-    def get_const_value(self):
-        return ''.join((x.get_const_value() for x in self.children))
+    def eval(self, is_const):
+        return ''.join((x.eval(is_const) for x in self.ch))
 
 class Set(Expr):
     def __init__(self):
@@ -107,6 +110,8 @@ class Index(Expr):
 
 class Member(Expr):
     def  __init__(self, record, member):
+    def eval(self, is_const = False):
+        return self.get_sym_var.eval(is_const)
         super().__init__('member', [record, member])
 
 class Deref(Expr):
