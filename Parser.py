@@ -90,18 +90,14 @@ class Parser(object):
             return None
 
     def parse_prim(self):
-        var = self.parse_var()
+        var = self.parse_right_val()
         if var:
             if self.parse_csv('(', ')'):
                 return CallFunc(var, self.last_csv)
-            elif self.parse_csv('[', ']'):
-                return Index(var, self.last_csv)
-            elif self.match('.'):
-                return Member(var, self.parse_var(True))
-            elif self.match('^'):
-                return Deref(var)
-            else:
-                return var
+                
+            # if type(var.type) == Func:
+            #     return CallFunc(var, [])
+            return var
         elif self.match('('):
             ret = self.parse_expr()
             self.expect(')')
@@ -119,19 +115,29 @@ class Parser(object):
                 self.expect(']')
             return ret
         else:
-            a = self.parse_const()
-            return a or self.error('Expected expr')
+            return self.parse_const(False) or self.expected_error('expression')
+        
+    def parse_right_val(self):
+        var = self.parse_var(False)
+        if not var:
+            return None
+        while True:
+            if self.parse_csv('[', ']'):
+                var = Index(var, self.last_csv)
+            elif self.match('.'):
+                var = Member(var, self.parse_var(True))
+            elif self.match('^'):
+                var = Deref(var)
+            else:
+                return var
 
     ################### parse stmt ###################
     def parse_stmt(self):
-        var = self.parse_var()
+        var = self.parse_right_val()
         if var:
             if self.match(':='):
                 return Assign(var, self.parse_expr())
-            elif self.parse_csv('(', ')'):
-                return CallFunc(var, self.last_csv)
-            else:
-                return var
+            return CallFunc(var, self.last_csv if self.parse_csv('(', ')') else [])
         elif self.match('if'):
             ret = If(self.parse_expr())
             self.expect('then')
