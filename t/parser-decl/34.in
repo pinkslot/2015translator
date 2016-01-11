@@ -1,0 +1,5 @@
+type a = ^string;
+var a:a;            {type and var namespaces are separated}
+begin 
+    f(1.1)
+end.

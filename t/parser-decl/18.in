@@ -1,0 +1,3 @@
+var
+a: record a: set of real end;
+begin end.

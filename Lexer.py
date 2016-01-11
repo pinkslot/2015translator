@@ -1,28 +1,5 @@
 from Token import Token, ValueToken, DummyToken
-
-class LexerException(Exception):
-    msg = {
-        'BadNL': "New line in string",
-        'BadEOF': "EOF in comment",
-        'BadChar': "Unexpected symbol", 
-        'BadCC': "Char code not in range[0, 127]",
-        'NoExp': "Expected atleast one digit after '[Ee][-+]?'", 
-        'NoHex': "Expected atleast one hex digit after '$'",
-        'NoCC': "Expected hex or decimal char code '#'",
-        'NoFract': "Expected number after '.' in real number",
-    }
-    def __init__(self, etype, line, col):
-        self.line = line
-        self.col = col        
-        self.etype = etype
-
-    def eprint(self):
-        print('LexerError: %s at line %d' % (self.msg[self.etype], self.line))
-
-    def to_cats(self):
-        return '%d\t%d\t%s' % (self.line, self.col, self.etype)
-
-
+from Exceptions import LexerException
 class Lexer(object):
     buf_size = 10
     EOFs = '`'
@@ -225,6 +202,5 @@ class Lexer(object):
         self.colc = 1
         self.EOFn = -1
         self.token_buf = None
-
         self.new_lexem()
         self.next(True)

@@ -1,0 +1,5 @@
+type
+pr = ^rec;		{ forward declaration }
+rec = record a: pr, b:int end;
+
+begin end.

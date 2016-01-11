@@ -1,0 +1,8 @@
+:=
+	deref
+		index
+			member
+				var<a>
+				var<b>
+			var<c>
+	integer<123>

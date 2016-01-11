@@ -1,0 +1,9 @@
+programm
+VAR---------------
+	a - record
+	VAR---------------
+		a - set_real
+
+CODE---------------
+	block
+		empty

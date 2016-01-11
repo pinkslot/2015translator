@@ -1,0 +1,11 @@
+programm
+VAR---------------
+	a - record
+	VAR---------------
+		a - real
+		b - real
+		c - integer
+
+CODE---------------
+	block
+		empty

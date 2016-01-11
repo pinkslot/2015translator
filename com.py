@@ -13,11 +13,13 @@ with open(argv[1], 'r') as i:
         else:
             p = Parser(l)
             path = argv[1].split('\\')
-            (p.parse_stmt() if path[1] == 'parser-stmt'\
-                else p.parse_expr() if path[1] == 'parser-expr'\
-                else None).nprint()
+            print(p.parse_stmt().print_str(), end='') if path[1] == 'parser-stmt'\
+                else print(p.parse_expr().print_str(), end='') if path[1] == 'parser-expr'\
+                else print(p.parse_program().print_str(), end='') if path[1] == 'parser-decl'\
+                else None
 
     except LexerException as e:
-        print(e.to_cats())
+        print(e.to_cats(), end = '')
     except ParserException as e:
         e.eprint()
+        

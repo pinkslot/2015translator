@@ -1,0 +1,14 @@
+programm
+VAR---------------
+	a - integer_func
+	CODE---------------
+		block
+			empty
+
+CODE---------------
+	block
+		:=
+			member
+				var<a>
+				var<a>
+			integer<2>

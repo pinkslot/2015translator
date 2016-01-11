@@ -1,0 +1,3 @@
+var
+a:array of array of ^integer;
+begin end.

@@ -1,0 +1,6 @@
+var
+a:integer;
+b:real;
+
+begin
+end.

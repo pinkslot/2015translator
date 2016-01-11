@@ -1,65 +1,86 @@
+from Exceptions import ParserException, indent_str
+from Sym import BASE_TYPES
+
 class Node(object):
     def __init__(self, name, children = None):
         self.name = name
         self.children = children or []
-        self.print_name = name
 
     def append(self, x):
         self.children.append(x)
 
-    def nprint(self, indent = 0):
-        print('\t' * indent + self.print_name)
+    def get_print_name(self):
+        return self.name
+
+    def print_str(self, indent = 0):
+        ret = indent_str(indent, self.get_print_name() + '\n')
         for i in self.children:
-            i.nprint(indent + 1)
+            ret += i.print_str(indent + 1)
+        return ret
 
 ################### Expr ###################
-class BinOp(Node):
+class Expr(Node):
+    def __init__(self, name, children = None):
+        self.children = children or []
+        super().__init__(name, children)
+
+    def get_sym_type(self):
+        assert False, 'undef get_type for some Expr'
+
+class BinOp(Expr):
     def __init__(self, op, arg1, arg2):
         super().__init__(op, [arg1, arg2])
 
-class UnOp(Node):
+class UnOp(Expr):
     def __init__(self, op, arg):
         super().__init__(op, [arg])
 
-class Var(Node):
-    def __init__(self, token):
+class Var(Expr):
+    def __init__(self, token, sym_var):
         super().__init__('var')
+        self.sym_var = sym_var
         self.ident = token.lexem
-        self.print_name = 'var<%s>' % self.ident
 
-class Const(Node):
-    def __init__(self, ttype_or_token, val = None):
-        if val is None:
-            val = ttype_or_token.value;
-            ttype_or_token = ttype_or_token.get_ptype();
-            
-        super().__init__(ttype_or_token)
-        self.val = val
-        self.print_name = ttype_or_token + '<%s>' % str(val)
+    def get_print_name(self):
+        return 'var<%s>' % self.ident
 
-class String(Node):
+    def get_sym_type(self):
+        return self.sym_var.sym_type
+
+class Const(Expr):
+    def __init__(self, token):
+        super().__init__(token.get_ptype())
+        self.val = token.value
+
+    def get_print_name(self):
+        return self.name + '<%s>' % str(self.val)
+
+    def get_sym_type(self):
+        return BASE_TYPES[self.name]
+
+class String(Expr):
     def __init__(self, parts):
         super().__init__('string', parts)
 
-class Set(Node):
+class Set(Expr):
     def __init__(self):
         super().__init__('set')
 
-class Range(Node):
+class Range(Expr):
     def __init__(self, left, right):
         super().__init__('range', [left, right])
 
-class Index(Node):
+class Index(Expr):
     def  __init__(self, array, indices):
         super().__init__('index', [array] + indices)
 
-class Member(Node):
+class Member(Expr):
     def  __init__(self, record, member):
         super().__init__('member', [record, member])
 
-class Deref(Node):
+class Deref(Expr):
     def  __init__(self, pointer):
-        super().__init__('deref', [pointer])
+        super().__init__('deref', [pointer])    
 
 ################### Stmt ###################
 class Assign(Node):
@@ -84,11 +105,11 @@ class If(Node):
         self.have_else = True
 class Cases(Node):
     def __init__(self, expr):
-        super().__init__('cases', expr)
+        super().__init__('cases', [expr])
 
 class Case(Node):
     def __init__(self, expr, stmt):
-        super().__init__('case')
+        super().__init__('case', [expr, stmt])
 
 class ConstList(Node):
     def __init__(self):
