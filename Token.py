@@ -11,10 +11,10 @@ class Token(object):
 
     reserved = {
         'begin',        'forward',  'do',       'else',     'end',          'for',
-        'function',     'if',       'array',    'of',       'procedure',    'program',
+        'function',     'if',       'array',    'of',       'program',
         'record',       'then',     'to',       'type',     'var',          'while',
         'break',        'continue', 'downto',   'exit',     'repeat',       'until',
-        'case',         'with'
+        'case',         'with',     'const',    'set'
     }
 
     pas2py_value = {
