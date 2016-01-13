@@ -35,11 +35,12 @@ class Expr(Node):
         assert False, 'eval for some Expr'
 
     def is_true_int(self):
+        self.sym_type = ITYPE
         if self.name in ('=', '<>', 'or', 'and', 'mod', 'div'):
             self.match_operand_type(True, ITYPE, ITYPE)
             return True
         if self.name == 'not':
-            self.expect_operand_of_type(True, ITYPE)
+            self.match_operand_type(True, ITYPE)
             return True
         if self.name in ('<', '<=', '=>', '>'):
             return all(c.get_sym_type() in (ITYPE, RTYPE) for c in self.ch)
@@ -49,16 +50,16 @@ class Expr(Node):
         raise ParserException('Unsupported operands type: ' + ', '.join(x.get_sym_type().name for x in self.ch) +
          ' for operator ' + self.name)
 
-    def match_operand_type(self, expect, types):            # m.b change ==, to isinstance
+    def match_operand_type(self, expect, *types):            # m.b change ==, to isinstance
         for i in range(len(types)):
             et = types[i]
             ft = self.ch[i].get_sym_type()
-            if type(ct) == 'type' and type(ft) != ct or type(ct) != 'type' and ft != ct:
+            if type(et) == 'type' and type(ft) != et or type(et) != 'type' and ft != et:
                 if expect:
                     raise ParserException('Expected operand of type ' + \
-                        ct.__name__ if type(ct) == 'type' else ct.name + ' but found' + ft.name)
+                        (et.__name__ if type(et) == 'type' else et.name) + ' but found ' + ft.name)
                 return False
-            return True
+        return True
 
 class BinOp(Expr):
     def __init__(self, op, arg1, arg2):
@@ -145,6 +146,15 @@ class UnOp(Expr):
     def __init__(self, op, arg):
         super().__init__(op, [arg])
         if self.name == '@':
+            self.sym_type = PointerType(self.ch[0].get_sym_type())
+        elif self.is_true_int():
+            pass
+        elif self.match_operand_type(False, ITYPE):
+            self.sym_type = ITYPE
+        elif self.match_operand_type(False, RTYPE):
+            self.sym_type = RTYPE
+        else:
+            self.type_error()
             # TODO check is var and move into separate class
 
     def eval(self, is_const = False):
