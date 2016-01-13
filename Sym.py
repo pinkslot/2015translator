@@ -1,4 +1,5 @@
 from Exceptions import *
+from Value import *
 
 class Sym(object):
     def __init__(self, name):
@@ -11,6 +12,9 @@ class SymType(Sym):
     def print_str(self, indent):
         return self.name
 
+    def make_value(self):
+        return Value(self)
+
 class EnumType(SymType):
     def __init__(self):
         super().__init__('enum')
@@ -18,7 +22,7 @@ class EnumType(SymType):
 
 class RangeType(SymType):
     def __init__(self, fst_node, lst_node):
-        super().__init__('range_%d_%d' % (fst_node.eval(True), lst_node.eval(True)))
+        super().__init__('range_%d_%d' % (fst_node.get_const(), lst_node.get_const()))
         self.fst = fst_node         # TODO get value
         self.lst = fst_node
 
@@ -27,7 +31,7 @@ class BaseType(SymType):
         super().__init__(name)
     
     def equal(self, you):
-        return self == yous
+        return self == you
 
 BASE_TYPES = dict((x, BaseType(x)) for x in ('integer', 'real', 'string'))
 ITYPE = BASE_TYPES['integer']
@@ -47,6 +51,9 @@ class ArrayType(DerType):
     def __init__(self, base):
         super().__init__('array_' + base.name, base)
 
+    def make_value(self):
+        return ArrayValue(self)
+
 class SetType(DerType):
     def __init__(self, base):
         super().__init__('set_' + base.name, base)
@@ -57,15 +64,14 @@ class SymVar(Sym):
         ident = id_token.lexem
         super().__init__(ident)
         self.sym_type = stype
+        self.value = stype.make_value
         table.var_table[ident] = self
 
     def print_str(self, indent):
         return indent_str(indent, self.name + ' - ' + self.sym_type.print_str(indent))
 
-    def eval(self, is_const = False):
-        if is_const:
-            raise ParserException('Expected const but found var')
-        return 0 # TODO return value
+    def get_const(self):
+        raise ParserException('Expected const but found var')
 
 class EnumVar(SymVar):
     def __init__(self, id_token, stype, func):
@@ -93,9 +99,9 @@ class RefParamVar(ParamVar):
 class ConstVar(SymVar):
     def __init__(self, id_token, node_val, func):
         super().__init__(id_token, node_val.get_sym_type(), func)             # TODO node_val.get_type()
-        self.value = node_val.eval(True)
+        self.value = node_val.get_const()
 
-    def eval(self, is_const = False):
+    def get_const(self):
         return self.value
 
     def print_str(self, indent):
@@ -186,3 +192,7 @@ class RecordType(Table):
     def __init__(self):
         super().__init__('record')
         self.var_table = {}
+
+    def make_value(self):
+        return RecordValue(self)
+

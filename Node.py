@@ -31,8 +31,8 @@ class Expr(Node):
     def get_sym_type(self):                 # TODO inherit definition
         return self.ch[0].get_sym_type()
 
-    def eval(self):
-        assert False, 'eval for some Expr'
+    def get_const(self):
+        assert False, 'get_const for base Expr'
 
     def is_true_int(self):
         self.sym_type = ITYPE
@@ -74,8 +74,8 @@ class BinOp(Expr):
     def py_op(self):
         return self.pas2py_op[self.name] if self.name in self.pas2py_op else self.name
 
-    def eval(self, is_const = False):
-        return non_bool_eval((' ' + self.py_op() + ' ').join((str(self.ch[i].eval(is_const)) for i in (0,1))))
+    def get_const(self):
+        return non_bool_eval((' ' + self.py_op() + ' ').join((str(self.ch[i].get_const()) for i in (0,1))))
 
     def get_sym_type(self):
         return self.sym_type
@@ -99,7 +99,7 @@ class AddOp(BinOp):
 
         if self.name == '+' and self.match_operand_type(False, STYPE, STYPE):
             self.sym_type = STYPE
-            self.eval = MethodType(lambda lself, is_const = False: lself.ch[0].eval() + lself.ch[1].eval(), self)
+            self.get_const = MethodType(lambda lself, is_const = False: lself.ch[0].get_const() + lself.ch[1].get_const(), self)
 
         elif is_plus_min and self.match_operand_type(False, ITYPE, ITYPE):
             self.sym_type = ITYPE
@@ -157,16 +157,16 @@ class UnOp(Expr):
             self.type_error()
             # TODO check is var and move into separate class
 
-    def eval(self, is_const = False):
+    def get_const(self):
         if self.name == '@':
-            if is_const:           # TODO eval addr
-                raise ParserException('Expected const but found addr')
+            pass
+            # if is_const:           # TODO eval addr
+            #     raise ParserException('Expected const but found addr')
         else:
-            return non_bool_eval(self.name + ' ' + str(self.ch[0].eval(is_const)))
+            return non_bool_eval(self.name + ' ' + str(self.ch[0].get_const()))
 
     def get_sym_type(self):
-        ch_type = self.ch[0].get_sym_type()
-        return PointerType(ch_type) if self.name == '@' else ch_type
+        return self.ch[0].get_sym_type()
 
 class Const(Expr):
     def __init__(self, token):
@@ -179,15 +179,15 @@ class Const(Expr):
     def get_sym_type(self):
         return BASE_TYPES[self.name]
 
-    def eval(self, is_const = False):
+    def get_const(self):
         return self.value
 
 class String(Expr):
     def __init__(self, parts):
         super().__init__('string', parts)
 
-    def eval(self, is_const):
-        return ''.join((x.eval(is_const) for x in self.ch))
+    def get_const(self):
+        return ''.join((x.get_const() for x in self.ch))
 
     def get_sym_type(self):
         return STYPE
@@ -201,14 +201,11 @@ class Range(Expr):
         super().__init__('range', [left, right])
 
 class LeftValue(Expr):
-    def get_sym_var(self):
-        assert False, 'get_sym_var for base left_value class'
-
     def get_sym_type(self):
         return self.get_sym_var().sym_type
 
-    def eval(self, is_const = False):
-        return self.get_sym_var.eval(is_const)
+    def get_const(self):
+        return self.get_sym_var().get_const()
 
     def get_sym_var(self):
         return self.sym_var
@@ -237,7 +234,7 @@ class Member(LeftValue):
         self.append(m)
         self.sym_var = m.sym_var
 
-class Deref(LeftValue):
+class Deref(LeftValue):                     # remove pointer from compiler
     def  __init__(self, pointer):
         super().__init__('deref', [pointer])
         self.match_operand_type(True, PointerType)
